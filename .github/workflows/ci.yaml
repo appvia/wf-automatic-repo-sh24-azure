@@ -1,0 +1,55 @@
+name: deployment
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      repository-branch:
+        description: The branch to checkout
+        default: main
+        required: true
+      app-name:
+        description: The name of the application that will be created in Wayfinder
+        default: sh24
+        required: true
+      app-environment-name:
+        description: The name of the application environment that will be created in Wayfinder
+        default: dev
+        required: true
+
+env:
+  WAYFINDER_TOKEN: ${{ secrets.WAYFINDER_TOKEN }}
+  WAYFINDER_SERVER: ${{ vars.WAYFINDER_SERVER }}
+  WAYFINDER_WORKSPACE: ${{ vars.WAYFINDER_WORKSPACE || 'demo' }}
+  APPLICATION_NAME: ${{ inputs.app-name || 'sh24' }}
+  APP_ENVIRONMENT_NAME: ${{ inputs.app-environment-name || 'dev' }}
+  INFRA_DIRECTORY: ${{ inputs.infra-directory || 'infra' }}
+
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    container:
+      env:
+        WAYFINDER_TOKEN:  ${{ env.WAYFINDER_TOKEN }}
+        WAYFINDER_SERVER:  ${{ env.WAYFINDER_SERVER }}
+        WAYFINDER_WORKSPACE:  ${{ env.WAYFINDER_WORKSPACE }}
+        APPLICATION_NAME: ${{ env.APPLICATION_NAME }}
+        APP_ENVIRONMENT_NAME:  ${{ env.APP_ENVIRONMENT_NAME }}
+        INFRA_DIRECTORY:  ${{ env.INFRA_DIRECTORY }}
+      image: quay.io/appvia-wayfinder/wftoolbox:v2.7.1	
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ inputs.repository-branch || 'main' }}   
+ 
+      - name: Create Application & Application Environment
+        run: wf apply -f "${INFRA_DIRECTORY}/" --wait-for-ready ${{ inputs.app-env-wait-time || '1m' }}
+
+      - name: deploy Application
+        run: wf deploy app ${APPLICATION_NAME} ${APP_ENVIRONMENT_NAME}
+      

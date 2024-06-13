@@ -1,0 +1,7 @@
+apiVersion: app.appvia.io/v2beta1
+kind: Application
+metadata:
+  name: sh24
+spec:
+  cloud: azure
+  name: sh24

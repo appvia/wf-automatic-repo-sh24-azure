@@ -1,0 +1,15 @@
+apiVersion: app.appvia.io/v2beta1
+kind: AppComponent
+metadata:
+  name: sh24-storage-account
+spec:
+  application: sh24
+  cloudResource:
+    plan: storage-account
+    variables:
+      name: sh24pj0pt1aocu
+  key: storage
+  name: sh24-storage-account
+  type: CloudResource
+
+
