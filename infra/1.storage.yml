@@ -7,7 +7,7 @@ spec:
   cloudResource:
     plan: storage-account
     variables:
-      name: sh24pj0pt1aocu
+      name: sh249pjz4t420u
   key: storage
   name: sh24-storage-account
   type: CloudResource
